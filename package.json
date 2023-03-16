@@ -1,5 +1,5 @@
 {
-  "name": "@distinction-dev/serverless-ts-template",
+  "name": "@distinction-dev/serverless-pipes",
   "version": "0.0.0-development",
   "description": "Template repository for us to use to create TS based backend packages",
   "scripts": {
@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/distinction-dev/serverless-ts-template.git"
+    "url": "git+https://github.com/distinction-dev/serverless-pipes.git"
   },
   "license": "MIT",
   "author": {
@@ -35,9 +35,9 @@
     "typescript"
   ],
   "bugs": {
-    "url": "https://github.com/distinction-dev/serverless-ts-template/issues"
+    "url": "https://github.com/distinction-dev/serverless-pipes/issues"
   },
-  "homepage": "https://github.com/distinction-dev/serverless-ts-template#readme",
+  "homepage": "https://github.com/distinction-dev/serverless-pipes#readme",
   "devDependencies": {
     "@types/chai": "^4.3.3",
     "@types/mocha": "^10.0.0",
