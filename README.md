@@ -1,26 +1,43 @@
-# TS Frontend Template
+# Serverless Pipes Plugin
 
-> Template repository for us to use to create TS based frontend packages
+🚧 This is a Work in Progress and we're looking to get inputs from the community
+Making it easier to use Eventbridge pipes with Serverless Framework. Easier Api resembling that of Step Functions
 
 ## Install
 
 ```bash
-npm install @distinction-dev/serverless-ts-template
+npm install @distinction-dev/serverless-pipes
 ```
 
 or
 
 ```bash
-yarn add @distinction-dev/serverless-ts-template
+yarn add @distinction-dev/serverless-pipes
 ```
 
 ## Usage
 
-```ts
-import { util1, util2 } from '@distinction-dev/serverless-ts-template';
+```yaml
+# serverless.yml
 
+functions:
+    pipeEnricher:
+        handler: functions/pipeEnricher.handler
+
+pipes:
+    event:
+        # Define Event source
+        sqs:
+            arn:
+                Fn::GetAtt:
+                    - MySourceQueue
+                    - Arn
+    enrichment:
+        function: pipeEnricher
+    target:
+        sqs:
+            arn:
+                Fn::GetAtt:
+                    - MyTargetQueue
+                    - Arn
 ```
-
-## Docs
-
-Automatically generated docs are available [here](https://distinction-dev.github.io/serverless-ts-template)
