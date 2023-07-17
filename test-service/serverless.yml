@@ -1,27 +1,87 @@
 service: test-service
+frameworkVersion: '^3.28.1'
+useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
+  region: ${self:custom.region}
+
+custom:
+  region: ${opt:region, "ap-south-1"}
 
 plugins:
   localPath: "../lib/index.js"
   modules:
     - ""
+
+pipes:
+  testPipe:
+    source:
+      sqs:
+        arn:
+          Fn::GetAtt: [SourceSQSQueue, Arn]
+        # batchsize: 3
+        # maximumBatchingWindow: 5
+    target:
+      sqs:
+        arn:
+          Fn::GetAtt: [TargetSNSTopic, TopicArn]
+    # enrichment: 
+    #   name: hello-test-hey-testt
+    # filter:
+    #   - Pattern: 'abcd'
+    #   - Pattern: 'defx'
+    iamRolePipes:
+      statements:
+        - Effect: Allow
+          Action:
+            - sns:Subscribe
+            - sns:Publish
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource: '*'
+
 functions:
-  hello:
+  hello-test-hey-testt:
     handler: handler.hello
-    events:
-      - schedule:
-          rate: cron(0 10 * * ? *)
-          name: test-crontab
-          timezone: America/New_York
-      - schedule:
-          rate: cron(0 5 * * ? *)
-          timezone: America/New_York
-      - schedule:
-          rate:
-            - cron(0 5 * * ? *)
-            - cron(0 6 * * ? *)
-          timezone: America/New_York
-validate: true
+
+resources:
+  Resources:
+    SourceSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: "SourceQueue"
+    SubscriberSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: "SubscriberQueue"
+    SubscriberSNSPolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: 
+                Fn::GetAtt: [SubscriberSQSQueue, Arn]
+              Principal:
+                Service:
+                  - 'sns.amazonaws.com'
+        Queues:
+          - { Ref: SubscriberSQSQueue }
+    TargetSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        Subscription:
+          - Endpoint:
+              Fn::GetAtt: [SubscriberSQSQueue, Arn]
+            Protocol: sqs
+        TopicName: "TargetSNSTopic"
+
+
