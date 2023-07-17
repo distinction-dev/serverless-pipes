@@ -5,6 +5,7 @@
     "target": "ES5",
     "module": "CommonJS",
     "moduleResolution": "node",
+    "noImplicitAny": false,
     "outDir": "./lib",
     "declarationDir": "./lib/types"
   },
