@@ -28,10 +28,10 @@ pipes:
         arn:
           Fn::GetAtt: [TargetSNSTopic, TopicArn]
     # enrichment: 
-    #   name: hello-test-hey-testt
+    #   name: pipes-enrichment
     # filter:
-    #   - Pattern: 'abcd'
-    #   - Pattern: 'defx'
+    #   - Pattern: 'abcd' #dont use this pattern, this is for demo testing of sls package
+    #   - Pattern: 'defx' #dont use this pattern, this is for demo testing of sls package
     iamRolePipes:
       statements:
         - Effect: Allow
@@ -47,7 +47,7 @@ pipes:
           Resource: '*'
 
 functions:
-  hello-test-hey-testt:
+  pipes-enrichment:
     handler: handler.hello
 
 resources:
