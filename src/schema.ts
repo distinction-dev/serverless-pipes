@@ -2,7 +2,7 @@ const DynamoDbSourceObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -15,7 +15,7 @@ const DynamoDbSourceObject = {
       type: "integer",
     },
     deadLetterArn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -55,7 +55,7 @@ const KinesisStreamSourceObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -68,7 +68,7 @@ const KinesisStreamSourceObject = {
       type: "integer",
     },
     deadLetterArn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -111,7 +111,7 @@ const SQSSourceObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -134,7 +134,7 @@ const SNSTargetObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -151,7 +151,7 @@ const LambdaFunctionTargetObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -169,7 +169,7 @@ const StepFunctionTargetObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -187,7 +187,7 @@ const SQSTargetObject = {
   type: "object",
   properties: {
     arn: {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
         },
@@ -237,14 +237,7 @@ const EnrichmentParameter = {
   type: "object",
   properties: {
     name: {
-      anyOf: [
-        {
-          type: "object",
-        },
-        {
-          type: "string",
-        },
-      ],
+      type: "string",
     },
   },
 } as const;
