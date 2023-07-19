@@ -160,7 +160,10 @@ const LambdaFunctionTargetObject = {
         },
       ],
     },
-    invocationType: { type: "string" },
+    invocationType: {
+      type: "string",
+      enum: ["REQUEST_RESPONSE", "FIRE_AND_FORGET"],
+    },
   },
   required: ["arn"],
 } as const;
@@ -178,7 +181,10 @@ const StepFunctionTargetObject = {
         },
       ],
     },
-    invocationType: { type: "string" },
+    invocationType: {
+      type: "string",
+      enum: ["REQUEST_RESPONSE", "FIRE_AND_FORGET"],
+    },
   },
   required: ["arn"],
 } as const;
