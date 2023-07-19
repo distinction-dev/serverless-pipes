@@ -289,10 +289,6 @@ class ServerlessPipes {
 
     // iamRolePipes.statements - required properties
     const requiredIamRoleProperties = ["Effect", "Action", "Resource"];
-    console.log(
-      "iamRole pipes :: ",
-      this.config[PipeName].iamRolePipes.statements
-    );
 
     if (
       !this.config[PipeName].iamRolePipes?.statements.every(obj =>
@@ -319,7 +315,6 @@ class ServerlessPipes {
         arnRegex?.test(arn)
       )
     ) {
-      console.log(`invalid arn specified for type :: ${type}`);
       throw new this.serverless["classes"].Error(
         `EventBridge Pipes Resource creation Failed: arn property is invalid for ${type}`
       );
