@@ -49,6 +49,9 @@ class ServerlessPipes {
   buildEventBridgePipes() {
     const PipeName = Object.keys(this.config)[0];
 
+    // validate input
+    this.validateInput(PipeName);
+
     const pipesDescription: string = this.config[PipeName]?.description || "";
     const pipesDesiredState: string = this.config[PipeName]?.desiredState || "";
 
@@ -219,6 +222,72 @@ class ServerlessPipes {
     return {
       Resources,
     };
+  }
+
+  validateInput(PipeName: string) {
+    // validate the required properties from schema
+    const requiredPipesProperties = ["source", "target", "iamRolePipes"];
+    const receivedPipesProperties = Object.keys(this.config[PipeName]);
+    if (
+      !requiredPipesProperties.every(item =>
+        receivedPipesProperties.includes(item)
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: All the required properties are not present. In order to create pipe successfully, provide all the source, target, iamRolePipes properties in the pipes section."
+      );
+    }
+
+    // source arn
+    if (
+      !(
+        this.config[PipeName].source?.dynamodb?.arn ||
+        this.config[PipeName].source?.kinesisStream?.arn ||
+        this.config[PipeName].source?.sqs?.arn
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: source.arn property not found for pipes"
+      );
+    }
+
+    // target arn
+    if (
+      !(
+        this.config[PipeName].target?.sns?.arn ||
+        this.config[PipeName].target?.sqs?.arn ||
+        this.config[PipeName].target?.lambda?.arn ||
+        this.config[PipeName].target?.stepFunction?.arn
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: target.arn property not found for pipes"
+      );
+    }
+
+    // iamRolePipes statements
+    if (!this.config[PipeName].iamRolePipes?.statements) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: iamRolePipes.statements property not found for pipes"
+      );
+    }
+
+    // iamRolePipes.statements - required properties
+    const requiredIamRoleProperties = ["Effect", "Action", "Resource"];
+    console.log(
+      "iamRole pipes :: ",
+      this.config[PipeName].iamRolePipes.statements
+    );
+
+    if (
+      !this.config[PipeName].iamRolePipes?.statements.every(obj =>
+        requiredIamRoleProperties.every(item => Object.keys(obj).includes(item))
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: All required properties not present in iamRolePipes.statements array item"
+      );
+    }
   }
 }
 

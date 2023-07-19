@@ -280,6 +280,7 @@ const IAMRoleParameter = {
           Action: { type: "array" },
           Resource: { type: "string" },
         },
+        required: ["Effect", "Action", "Resource"],
       },
     },
   },
