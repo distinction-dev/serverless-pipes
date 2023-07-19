@@ -249,6 +249,13 @@ class ServerlessPipes {
       throw new this.serverless["classes"].Error(
         "EventBridge Pipes Resource creation Failed: source.arn property not found for pipes"
       );
+    } else {
+      this.validateArn(
+        this.config[PipeName].source?.dynamodb?.arn ||
+          this.config[PipeName].source?.kinesisStream?.arn ||
+          this.config[PipeName].source?.sqs?.arn,
+        "source"
+      );
     }
 
     // target arn
@@ -262,6 +269,14 @@ class ServerlessPipes {
     ) {
       throw new this.serverless["classes"].Error(
         "EventBridge Pipes Resource creation Failed: target.arn property not found for pipes"
+      );
+    } else {
+      this.validateArn(
+        this.config[PipeName].target?.sns?.arn ||
+          this.config[PipeName].target?.sqs?.arn ||
+          this.config[PipeName].target?.lambda?.arn ||
+          this.config[PipeName].target?.stepFunction?.arn,
+        "target"
       );
     }
 
@@ -286,6 +301,27 @@ class ServerlessPipes {
     ) {
       throw new this.serverless["classes"].Error(
         "EventBridge Pipes Resource creation Failed: All required properties not present in iamRolePipes.statements array item"
+      );
+    }
+  }
+
+  validateArn(arn: string | Record<string, any>, type: string) {
+    const arnRegex = new RegExp(
+      "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-d{1})?:(d{12})?:(.+)$"
+    );
+    if (typeof arn === "object") arn = Object.keys(arn)[0];
+
+    if (
+      !(
+        arn?.startsWith("Ref:") ||
+        arn?.startsWith("Fn::GetAtt") ||
+        arn?.startsWith("Fn::Sub") ||
+        arnRegex?.test(arn)
+      )
+    ) {
+      console.log(`invalid arn specified for type :: ${type}`);
+      throw new this.serverless["classes"].Error(
+        `EventBridge Pipes Resource creation Failed: arn property is invalid for ${type}`
       );
     }
   }
