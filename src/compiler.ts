@@ -1,12 +1,16 @@
 import {
-  DynamoDBSourceParameters,
-  FilterCriteria,
-  KinesisStreamSourceParameter,
-  LambdaTargetParameter,
-  SNSTargetParameter,
-  SQSSourceParameter,
-  SQSTargetParameter,
-  StepFunctionTargetParameter,
+  AWSPipesPipePipeSourceParametersDefinition,
+  AWSPipesPipePipeTargetParametersDefinition,
+  AWSPipesPipeRequestedPipeStateDefinition,
+} from "serverless-schema";
+import {
+  getSourceDynamoDbStreamIAMRole,
+  getSourceKinesisStreamIAMRole,
+  getSourceSQSIAMRole,
+  getTargetLambdaFunctionIAMRole,
+  getTargetSNSIAMRole,
+  getTargetSQSIAMRole,
+  getTargetStepFunctionIAMRole,
 } from "./models";
 
 export function getSourceArn(
@@ -37,18 +41,14 @@ export function getTargetArn(
 export function compileBasedOnSourceType(
   config: Record<string, any>,
   PipeName: string
-):
-  | DynamoDBSourceParameters
-  | KinesisStreamSourceParameter
-  | SQSSourceParameter
-  | Record<string, any> {
+): AWSPipesPipePipeSourceParametersDefinition {
   const sourceName: string = Object.keys(config[PipeName].source)[0];
   switch (sourceName) {
     case "dynamodb": {
-      const params: DynamoDBSourceParameters = {
+      const params: AWSPipesPipePipeSourceParametersDefinition = {
         DynamoDBStreamParameters: {
           StartingPosition:
-            config[PipeName].source[sourceName].parallelizationFactor,
+            config[PipeName].source[sourceName].parallelizationFactor || "",
           BatchSize: config[PipeName].source[sourceName]?.batchsize || 10,
           DeadLetterConfig: {
             Arn: config[PipeName].source[sourceName]?.deadLetterArn || "",
@@ -56,23 +56,24 @@ export function compileBasedOnSourceType(
           MaximumBatchingWindowInSeconds:
             config[PipeName].source[sourceName]?.maximumBatchingWindow || 10,
           MaximumRecordAgeInSeconds:
-            config[PipeName].source[sourceName]?.maximumRecordAgeInSeconds,
+            config[PipeName].source[sourceName]?.maximumRecordAgeInSeconds ||
+            "",
           MaximumRetryAttempts:
-            config[PipeName].source[sourceName]?.maximumRetryAttempts,
+            config[PipeName].source[sourceName]?.maximumRetryAttempts || "",
           OnPartialBatchItemFailure:
             config[PipeName].source[sourceName]?.onPartialBatchItemFailure ||
             "",
           ParallelizationFactor:
-            config[PipeName].source[sourceName]?.parallelizationFactor,
+            config[PipeName].source[sourceName]?.parallelizationFactor || "",
         },
       };
       return params;
     }
     case "kinesisStream": {
-      const params: KinesisStreamSourceParameter = {
+      const params: AWSPipesPipePipeSourceParametersDefinition = {
         KinesisStreamParameters: {
           StartingPosition:
-            config[PipeName].source[sourceName].parallelizationFactor,
+            config[PipeName].source[sourceName].parallelizationFactor || "",
           BatchSize: config[PipeName].source[sourceName]?.batchsize || 10,
           DeadLetterConfig: {
             Arn: config[PipeName].source[sourceName]?.deadLetterArn || "",
@@ -80,14 +81,15 @@ export function compileBasedOnSourceType(
           MaximumBatchingWindowInSeconds:
             config[PipeName].source[sourceName]?.maximumBatchingWindow || 10,
           MaximumRecordAgeInSeconds:
-            config[PipeName].source[sourceName]?.maximumRecordAgeInSeconds,
+            config[PipeName].source[sourceName]?.maximumRecordAgeInSeconds ||
+            "",
           MaximumRetryAttempts:
-            config[PipeName].source[sourceName]?.maximumRetryAttempts,
+            config[PipeName].source[sourceName]?.maximumRetryAttempts || "",
           OnPartialBatchItemFailure:
             config[PipeName].source[sourceName]?.onPartialBatchItemFailure ||
             "",
           ParallelizationFactor:
-            config[PipeName].source[sourceName]?.parallelizationFactor,
+            config[PipeName].source[sourceName]?.parallelizationFactor || "",
           StartingPositionTimestamp:
             config[PipeName].source[sourceName]?.startingPositionTimestamp ||
             "",
@@ -96,7 +98,7 @@ export function compileBasedOnSourceType(
       return params;
     }
     case "sqs": {
-      const params: SQSSourceParameter = {
+      const params: AWSPipesPipePipeSourceParametersDefinition = {
         SqsQueueParameters: {
           BatchSize: config[PipeName].source[sourceName]?.batchsize || 10,
           MaximumBatchingWindowInSeconds:
@@ -113,8 +115,8 @@ export function compileBasedOnSourceType(
 export function compileFilterPatterns(
   config: Record<string, any>,
   PipeName: string
-): FilterCriteria {
-  const params: FilterCriteria = {
+): AWSPipesPipePipeSourceParametersDefinition {
+  const params: AWSPipesPipePipeSourceParametersDefinition = {
     FilterCriteria: {
       Filters: config[PipeName]?.filter || "",
     },
@@ -125,19 +127,14 @@ export function compileFilterPatterns(
 export function compileBasedOnTargetType(
   config: Record<string, any>,
   PipeName: string
-):
-  | SNSTargetParameter
-  | SQSTargetParameter
-  | LambdaTargetParameter
-  | StepFunctionTargetParameter
-  | Record<string, any> {
+): AWSPipesPipePipeTargetParametersDefinition {
   const targetName: string = Object.keys(config[PipeName].target)[0];
   switch (targetName) {
     case "sns": {
       return {};
     }
     case "sqs": {
-      const params: SQSTargetParameter = {
+      const params: AWSPipesPipePipeTargetParametersDefinition = {
         SqsQueueParameters: {
           MessageDeduplicationId:
             config[PipeName].target[targetName].messageDeduplicationId || "",
@@ -148,7 +145,7 @@ export function compileBasedOnTargetType(
       return params;
     }
     case "lambda": {
-      const params: LambdaTargetParameter = {
+      const params: AWSPipesPipePipeTargetParametersDefinition = {
         LambdaFunctionParameters: {
           InvocationType:
             config[PipeName].target[targetName].invocationType || "",
@@ -157,7 +154,7 @@ export function compileBasedOnTargetType(
       return params;
     }
     case "stepFunction": {
-      const params: StepFunctionTargetParameter = {
+      const params: AWSPipesPipePipeTargetParametersDefinition = {
         StepFunctionStateMachineParameters: {
           InvocationType:
             config[PipeName].target[targetName].invocationType || "",
@@ -165,6 +162,54 @@ export function compileBasedOnTargetType(
       };
       return params;
     }
+    default:
+      return {};
+  }
+}
+
+export function getDesiredStateOfPipe(
+  config: Record<string, any>,
+  PipeName: string
+): AWSPipesPipeRequestedPipeStateDefinition {
+  const enabled: boolean = config[PipeName].enabled;
+
+  const PipeDesiredState: AWSPipesPipeRequestedPipeStateDefinition = enabled
+    ? "RUNNING"
+    : "STOPPED";
+  return PipeDesiredState;
+}
+
+export function generateSourceIAMRole(
+  config: Record<string, any>,
+  PipeName: string
+): Record<string, any> {
+  const sourceName: string = Object.keys(config[PipeName].source)[0];
+  switch (sourceName) {
+    case "sqs":
+      return getSourceSQSIAMRole();
+    case "dynamodb":
+      return getSourceDynamoDbStreamIAMRole();
+    case "kinesisStream":
+      return getSourceKinesisStreamIAMRole();
+    default:
+      return {};
+  }
+}
+
+export function generateTargetIAMRole(
+  config: Record<string, any>,
+  PipeName: string
+): Record<string, any> {
+  const targetName: string = Object.keys(config[PipeName].target)[0];
+  switch (targetName) {
+    case "sns":
+      return getTargetSNSIAMRole();
+    case "sqs":
+      return getTargetSQSIAMRole();
+    case "lambda":
+      return getTargetLambdaFunctionIAMRole();
+    case "stepFunction":
+      return getTargetStepFunctionIAMRole();
     default:
       return {};
   }
