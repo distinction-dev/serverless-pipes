@@ -2,47 +2,35 @@ import Serverless from "serverless";
 import { FromSchema } from "json-schema-to-ts";
 import { schema } from "./schema";
 import {
+  DynamoDBSourceParameters,
   EnrichmentParameter,
-  getEnrichmentLambdaFunctionIAMRole,
-  getSharedIAMRole,
+  FilterCriteria,
+  KinesisStreamSourceParameter,
+  LambdaTargetParameter,
+  SNSTargetParameter,
+  SQSSourceParameter,
+  SQSTargetParameter,
+  StepFunctionTargetParameter,
 } from "./models";
 import { get, removeEmptyProperties } from "./util";
-import Ajv from "ajv";
 import {
   compileBasedOnSourceType,
   compileBasedOnTargetType,
   compileFilterPatterns,
-  generateSourceIAMRole,
-  generateTargetIAMRole,
-  getDesiredStateOfPipe,
   getSourceArn,
   getTargetArn,
 } from "./compiler";
-import {
-  AWSPipesPipePipeSourceParametersDefinition,
-  AWSPipesPipePipeTargetParametersDefinition,
-  AWSPipesPipeRequestedPipeStateDefinition,
-} from "serverless-schema";
 
-export interface ServerlessPluginOptions {
+interface ServerlessPluginOptions {
   globalOptions?: boolean;
 }
-export class ServerlessPipes {
+class ServerlessPipes {
   serverless: Serverless;
-  // serverless: Serverless & { classes: { Error: typeof Error } };
   options: ServerlessPluginOptions;
   config: any;
   hooks: { "package:compileFunctions": any };
-  extendedServerless: Serverless & { classes: { Error: typeof Error } };
-  constructor(
-    // serverless: Serverless & { classes: { Error: typeof Error } },
-    serverless: Serverless,
-    options: ServerlessPluginOptions
-  ) {
+  constructor(serverless: Serverless, options: ServerlessPluginOptions) {
     this.serverless = serverless;
-    this.extendedServerless = serverless as Serverless & {
-      classes: { Error: typeof Error };
-    };
     this.options = options;
     this.hooks = {
       "package:compileFunctions": this.buildEventBridgePipes.bind(this),
@@ -58,38 +46,41 @@ export class ServerlessPipes {
     this.config = config;
   }
 
-  buildEventBridgePipes(): void {
+  buildEventBridgePipes() {
     const PipeName = Object.keys(this.config)[0];
 
     // validate input
-    this.validateInput();
+    this.validateInput(PipeName);
 
     const pipesDescription: string = this.config[PipeName]?.description || "";
-    // const pipesDesiredState: string = this.config[PipeName]?.desiredState || "";
-
-    // get pipe desiredState
-    const pipesDesiredState: AWSPipesPipeRequestedPipeStateDefinition =
-      getDesiredStateOfPipe(this.config, PipeName);
+    const pipesDesiredState: string = this.config[PipeName]?.desiredState || "";
 
     // get source ARN
     const sourceARN: string = getSourceArn(this.config, PipeName);
-    sourceARN.length ? this.validateArn(sourceARN, "source") : null;
 
     // get target ARN
     const targetARN: string = getTargetArn(this.config, PipeName);
-    targetARN.length ? this.validateArn(targetARN, "target") : null;
 
     // get source parameters
-    const sourceCompiledResources: AWSPipesPipePipeSourceParametersDefinition =
-      compileBasedOnSourceType(this.config, PipeName);
+    const sourceCompiledResources:
+      | SQSSourceParameter
+      | DynamoDBSourceParameters
+      | KinesisStreamSourceParameter
+      | Record<string, any> = compileBasedOnSourceType(this.config, PipeName);
 
     // get target parameters
-    const targetCompiledResources: AWSPipesPipePipeTargetParametersDefinition =
-      compileBasedOnTargetType(this.config, PipeName);
+    const targetCompiledResources:
+      | SNSTargetParameter
+      | LambdaTargetParameter
+      | StepFunctionTargetParameter
+      | SQSTargetParameter
+      | Record<string, any> = compileBasedOnTargetType(this.config, PipeName);
 
     // get filter parameters
-    const filterParameters: AWSPipesPipePipeSourceParametersDefinition =
-      compileFilterPatterns(this.config, PipeName);
+    const filterParameters: FilterCriteria = compileFilterPatterns(
+      this.config,
+      PipeName
+    );
 
     // get enrichment parameters
     const enrichmentParameters: EnrichmentParameter = {
@@ -115,22 +106,14 @@ export class ServerlessPipes {
     // merge the pipes & iam roles template in the main template of application
     const template =
       this.serverless.service.provider.compiledCloudFormationTemplate;
-
-    if (this.config[PipeName]?.iamRolePipes?.type.length > 0) {
-      template.Resources = {
-        ...template.Resources,
-        ...iamRolesPipes.Resources,
-        ...PipesTemplate.Resources,
-      };
-    } else {
-      template.Resources = {
-        ...template.Resources,
-        ...PipesTemplate.Resources,
-      };
-    }
+    template.Resources = {
+      ...template.Resources,
+      ...iamRolesPipes.Resources,
+      ...PipesTemplate.Resources,
+    };
   }
 
-  generateIAMRole(): Record<string, any> {
+  generateIAMRole() {
     const PipeName = Object.keys(this.config)[0];
     return {
       Resources: {
@@ -151,24 +134,17 @@ export class ServerlessPipes {
               ],
             },
             Policies:
-              this.config[PipeName]?.iamRolePipes?.type === "individual"
+              this.config[PipeName].iamRolePipes.statements.length > 0
                 ? [
                     {
                       PolicyName: "EventBridgePipesPolicy",
                       PolicyDocument: {
                         Version: "2012-10-17",
-                        Statement: [
-                          generateSourceIAMRole(this.config, PipeName)
-                            .Statement,
-                          generateTargetIAMRole(this.config, PipeName)
-                            .Statement,
-                          getEnrichmentLambdaFunctionIAMRole().Statement,
-                        ],
+                        Statement:
+                          this.config[PipeName].iamRolePipes.statements,
                       },
                     },
                   ]
-                : this.config[PipeName]?.iamRolePipes?.type === "shared"
-                ? [getSharedIAMRole().Statement]
                 : [],
           },
         },
@@ -179,14 +155,23 @@ export class ServerlessPipes {
   generatePipesResourceStack(
     pipeName: string,
     pipesDescription: string,
-    pipesDesiredState: AWSPipesPipeRequestedPipeStateDefinition,
+    pipesDesiredState: string,
     sourceARN: string,
     targetARN: string,
-    sourceParameters: AWSPipesPipePipeSourceParametersDefinition,
-    targetParameters: AWSPipesPipePipeTargetParametersDefinition,
-    filterParameters: AWSPipesPipePipeSourceParametersDefinition,
+    sourceParameters:
+      | SQSSourceParameter
+      | DynamoDBSourceParameters
+      | KinesisStreamSourceParameter
+      | Record<string, any>,
+    targetParameters:
+      | SNSTargetParameter
+      | LambdaTargetParameter
+      | StepFunctionTargetParameter
+      | SQSTargetParameter
+      | Record<string, any>,
+    filterParameters: FilterCriteria,
     enrichmentParameters: EnrichmentParameter
-  ): Record<string, any> {
+  ) {
     const pipesIamRoleLogicalName = `${pipeName}PipesIAMRole`;
     const pipesSourceProperty = {
       ...sourceParameters,
@@ -199,14 +184,19 @@ export class ServerlessPipes {
           enrichmentParameters.FunctionName
         )
       ) {
-        const enrichmentFunctionName: string = this.serverless.providers[
-          "aws"
-        ].naming.getNormalizedFunctionName(enrichmentParameters.FunctionName);
+        const enrichmentFunctionName: string =
+          enrichmentParameters.FunctionName.includes("-")
+            ? (
+                enrichmentParameters.FunctionName.charAt(0).toUpperCase() +
+                enrichmentParameters.FunctionName.slice(1)
+              ).replace(/-/g, "Dash")
+            : enrichmentParameters.FunctionName.charAt(0).toUpperCase() +
+              enrichmentParameters.FunctionName.slice(1);
         enrichmentFunctionArn = {
           "Fn::GetAtt": [`${enrichmentFunctionName}LambdaFunction`, "Arn"],
         };
       } else {
-        throw new this.extendedServerless["classes"].Error(
+        throw new this.serverless["classes"].Error(
           `Lambda Function Not Found: The value of name property ( ${enrichmentParameters.FunctionName} ) in enrichment property of pipes doesnt seems to be matching with any function name defined in functions property.`
         );
       }
@@ -222,92 +212,114 @@ export class ServerlessPipes {
           SourceParameters: pipesSourceProperty,
           TargetParameters: targetParameters,
           Enrichment: enrichmentFunctionArn,
-          RoleArn:
-            this.config[pipeName].iamRolePipes?.type.length > 0
-              ? { "Fn::GetAtt": [`${pipesIamRoleLogicalName}`, "Arn"] }
-              : this.serverless.service.provider["iamRoleStatements"].length > 0
-              ? this.serverless.providers["aws"].naming.getRoleName(
-                  this.serverless.service.provider["iamRoleStatements"]
-                )
-              : "",
+          RoleArn: { "Fn::GetAtt": [`${pipesIamRoleLogicalName}`, "Arn"] },
         },
       },
     };
 
     // delete/remove all the empty/undefined/null properties from the Resources object to avoid any unwanted issues.
     removeEmptyProperties(Resources);
-
-    // check all the required parameters are persisted after removal of empty/undefined/null properties
-    const propertiesToCheck = ["Source", "Target", "RoleArn"];
-    const hasAllRequiredPipesParameters = propertiesToCheck.every(
-      prop => prop in Resources[pipeName + "EventBridgePipes"].Properties
-    );
-    if (!hasAllRequiredPipesParameters) {
-      throw new this.extendedServerless["classes"].Error(
-        "EventBridge Pipes Resource creation Failed: Invalid CloudFormation Template for AWS::Pipes::Pipe. Check your pipes plugin configuration."
-      );
-    }
     return {
       Resources,
     };
   }
 
-  validateInput(): void {
-    const ajv = new Ajv({ messages: true, allErrors: true });
-    const schemaObject = schema;
-    const pipesData = this.config;
-    const compileInput: Record<string, any> = ajv.compile(schema);
-    const validatedInput = ajv.validate(schemaObject, pipesData);
+  validateInput(PipeName: string) {
+    // validate the required properties from schema
+    const requiredPipesProperties = ["source", "target", "iamRolePipes"];
+    const receivedPipesProperties = Object.keys(this.config[PipeName]);
+    if (
+      !requiredPipesProperties.every(item =>
+        receivedPipesProperties.includes(item)
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: All the required properties are not present. In order to create pipe successfully, provide all the source, target, iamRolePipes properties in the pipes section."
+      );
+    }
 
-    if (!validatedInput) {
-      let errorMessage = "";
-      for (const error of compileInput.errors) {
-        if (error.keyword === "required") {
-          const missingProperty: string = error?.params?.missingProperty;
-          const path: string = error?.instancePath;
-          errorMessage += `${missingProperty} property is missing at ${path} path in pipes plugin, `;
-        } else if (error.keyword === "type") {
-          const message: string = error?.message;
-          const path: string = error?.instancePath;
-          errorMessage += `At ${path} path, it ${message} or should have all its required properties, `;
-        } else {
-          const message: string = error?.message;
-          const path: string = error?.instancePath;
-          errorMessage += `At ${path} path - ${message}, `;
-        }
-      }
+    // source arn
+    if (
+      !(
+        this.config[PipeName].source?.dynamodb?.arn ||
+        this.config[PipeName].source?.kinesisStream?.arn ||
+        this.config[PipeName].source?.sqs?.arn
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: source.arn property not found for pipes"
+      );
+    } else {
+      this.validateArn(
+        this.config[PipeName].source?.dynamodb?.arn ||
+          this.config[PipeName].source?.kinesisStream?.arn ||
+          this.config[PipeName].source?.sqs?.arn,
+        "source"
+      );
+    }
 
-      if (errorMessage.length) {
-        throw new this.extendedServerless["classes"].Error(
-          `EventBridge Pipes Resource creation Failed: ${errorMessage.slice(
-            0,
-            -2
-          )}`
-        );
-      }
+    // target arn
+    if (
+      !(
+        this.config[PipeName].target?.sns?.arn ||
+        this.config[PipeName].target?.sqs?.arn ||
+        this.config[PipeName].target?.lambda?.arn ||
+        this.config[PipeName].target?.stepFunction?.arn
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: target.arn property not found for pipes"
+      );
+    } else {
+      this.validateArn(
+        this.config[PipeName].target?.sns?.arn ||
+          this.config[PipeName].target?.sqs?.arn ||
+          this.config[PipeName].target?.lambda?.arn ||
+          this.config[PipeName].target?.stepFunction?.arn,
+        "target"
+      );
+    }
+
+    // iamRolePipes statements
+    if (!this.config[PipeName].iamRolePipes?.statements) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: iamRolePipes.statements property not found for pipes"
+      );
+    }
+
+    // iamRolePipes.statements - required properties
+    const requiredIamRoleProperties = ["Effect", "Action", "Resource"];
+
+    if (
+      !this.config[PipeName].iamRolePipes?.statements.every(obj =>
+        requiredIamRoleProperties.every(item => Object.keys(obj).includes(item))
+      )
+    ) {
+      throw new this.serverless["classes"].Error(
+        "EventBridge Pipes Resource creation Failed: All required properties not present in iamRolePipes.statements array item"
+      );
     }
   }
 
-  validateArn(arn: string | Record<string, any>, type: string): void {
+  validateArn(arn: string | Record<string, any>, type: string) {
     const arnRegex = new RegExp(
       "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-d{1})?:(d{12})?:(.+)$"
     );
     if (typeof arn === "object") arn = Object.keys(arn)[0];
-    console.log("arn :: ", arn, " for type:: ", type);
+
     if (
       !(
-        arn?.startsWith("Ref") ||
+        arn?.startsWith("Ref:") ||
         arn?.startsWith("Fn::GetAtt") ||
         arn?.startsWith("Fn::Sub") ||
         arnRegex?.test(arn)
       )
     ) {
-      throw new this.extendedServerless["classes"].Error(
+      throw new this.serverless["classes"].Error(
         `EventBridge Pipes Resource creation Failed: arn property is invalid for ${type}`
       );
     }
   }
 }
 
-// comment when doing unit testing
 module.exports = ServerlessPipes;

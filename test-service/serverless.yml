@@ -6,22 +6,6 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: ${self:custom.region}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - sns:Subscribe
-        - sns:Publish
-      Resource: '*'
-    - Effect: Allow
-      Action:
-        - sqs:ReceiveMessage
-        - sqs:DeleteMessage
-        - sqs:GetQueueAttributes
-      Resource: '*'
-    - Effect: Allow
-      Action:
-        - lambda:InvokeFunction
-      Resource: '*'
 
 custom:
   region: ${opt:region, "ap-south-1"}
@@ -33,7 +17,6 @@ plugins:
 
 pipes:
   testPipe:
-    enabled: true
     source:
       sqs:
         arn:
@@ -41,20 +24,31 @@ pipes:
         # batchsize: 3
         # maximumBatchingWindow: 5
     target:
-      sns:
+      sqs:
         arn:
           Fn::GetAtt: [TargetSNSTopic, TopicArn]
-    enrichment: 
-      name: pipes-enrichment
-    filter:
-      - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+    # enrichment: 
+    #   name: pipes-enrichment
+    # filter:
+    #   - Pattern: 'abcd' #dont use this pattern, this is for demo testing of sls package
+    #   - Pattern: 'defx' #dont use this pattern, this is for demo testing of sls package
     iamRolePipes:
-      type: "individual"
-        
+      statements:
+        - Effect: Allow
+          Action:
+            - sns:Subscribe
+            - sns:Publish
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource: '*'
 
 functions:
   pipes-enrichment:
-    handler: ./functions/enrichment.handler
+    handler: handler.hello
 
 resources:
   Resources:
