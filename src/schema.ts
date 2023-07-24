@@ -220,23 +220,13 @@ const FilterParameter = {
 
 const SourceParameter = {
   type: "object",
-  oneOf: [
-    {
-      properties: {
-        dynamodb: DynamoDbSourceObject,
-      },
-    },
-    {
-      properties: {
-        kinesisStream: KinesisStreamSourceObject,
-      },
-    },
-    {
-      properties: {
-        sqs: SQSSourceObject,
-      },
-    },
-  ],
+  properties: {
+    dynamodb: DynamoDbSourceObject,
+    kinesisStream: KinesisStreamSourceObject,
+    sqs: SQSSourceObject,
+  },
+  minProperties: 1,
+  maxProperties: 1,
 } as const;
 
 const EnrichmentParameter = {
@@ -250,44 +240,22 @@ const EnrichmentParameter = {
 
 const TargetParameter = {
   type: "object",
-  oneOf: [
-    {
-      properties: {
-        sns: SNSTargetObject,
-      },
-    },
-    {
-      properties: {
-        lambda: LambdaFunctionTargetObject,
-      },
-    },
-    {
-      properties: {
-        stepFunction: StepFunctionTargetObject,
-      },
-    },
-    {
-      properties: {
-        sqs: SQSTargetObject,
-      },
-    },
-  ],
+  properties: {
+    sns: SNSTargetObject,
+    lambda: LambdaFunctionTargetObject,
+    stepFunction: StepFunctionTargetObject,
+    sqs: SQSTargetObject,
+  },
+  minProperties: 1,
+  maxProperties: 1,
 } as const;
 
 const IAMRoleParameter = {
   type: "object",
   properties: {
-    statements: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          Effect: { type: "string" },
-          Action: { type: "array" },
-          Resource: { type: "string" },
-        },
-        required: ["Effect", "Action", "Resource"],
-      },
+    type: {
+      type: "string",
+      enum: ["individual", "shared"],
     },
   },
 } as const;
@@ -301,8 +269,8 @@ export const schema = {
         description: {
           type: "string",
         },
-        desiredState: {
-          type: "string",
+        enabled: {
+          type: "boolean",
         },
         source: SourceParameter,
         filter: FilterParameter,
@@ -310,7 +278,7 @@ export const schema = {
         target: TargetParameter,
         iamRolePipes: IAMRoleParameter,
       },
-      required: ["source", "target", "iamRolePipes"],
+      required: ["source", "target", "enabled"],
       additionalProperties: false,
     },
   },

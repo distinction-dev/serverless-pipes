@@ -1,7 +1,7 @@
 {
-  "name": "@distinction-dev/serverless-pipes",
+  "name": "serverless-pipes",
   "version": "0.0.0-development",
-  "description": "Template repository for us to use to create TS based backend packages",
+  "description": "Serverless Framework plugin called as \"pipes\", used to create EventBridge Pipes by providing the required event sources, targets and other parameters as needed.",
   "scripts": {
     "clean": "rm -rf ./lib/",
     "build": "tsc -p ./tsconfig.cjs.json",
@@ -58,6 +58,7 @@
     "mocha": "^10.1.0",
     "prettier": "^2.2.1",
     "semantic-release": "^19.0.2",
+    "serverless": "^3.33.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.0-dev.20220916"
   },
@@ -76,6 +77,7 @@
   },
   "dependencies": {
     "@types/serverless": "^3.12.8",
+    "ajv": "^8.12.0",
     "serverless-schema": "^1.33.0"
   }
 }
