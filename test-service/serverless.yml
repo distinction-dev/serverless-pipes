@@ -50,10 +50,50 @@ pipes:
       - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
     iamRolePipes:
       type: "individual"
+  # pipeTwo:
+  #   enabled: false
+  #   source:
+  #     dynamodb:
+  #       arn:
+  #         Fn::GetAtt: [SourceSQSQueue, Arn]
+  #       startingPosition: "TRIM_HORIZON"
+  #       # batchsize: 3
+  #       # maximumBatchingWindow: 5
+  #   target:
+  #     sqs:
+  #       arn:
+  #         Fn::GetAtt: [TargetSNSTopic, TopicArn]
+  #   enrichment: 
+  #     name: pipes-enrichment-two
+  #   filter:
+  #     - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+  #   iamRolePipes:
+  #     type: "shared"
+  # pipeThree:
+  #   enabled: false
+  #   source:
+  #     dynamodb:
+  #       arn:
+  #         Fn::GetAtt: [SourceSQSQueue, Arn]
+  #       startingPosition: "TRIM_HORIZON"
+  #       # batchsize: 3
+  #       # maximumBatchingWindow: 5
+  #   target:
+  #     sqs:
+  #       arn:
+  #         Fn::GetAtt: [TargetSNSTopic, TopicArn]
+  #   enrichment: 
+  #     name: pipes-enrichment-two
+  #   filter:
+  #     - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+  #   iamRolePipes:
+  #     type: "shared"
         
 
 functions:
   pipes-enrichment:
+    handler: ./functions/enrichment.handler
+  pipes-enrichment-two:
     handler: ./functions/enrichment.handler
 
 resources:

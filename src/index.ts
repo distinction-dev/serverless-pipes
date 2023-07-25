@@ -29,16 +29,13 @@ export interface ServerlessPluginOptions {
 }
 export class ServerlessPipes {
   serverless: Serverless;
-  // serverless: Serverless & { classes: { Error: typeof Error } };
   options: ServerlessPluginOptions;
   config: any;
   hooks: { "package:compileFunctions": any };
   extendedServerless: Serverless & { classes: { Error: typeof Error } };
-  constructor(
-    // serverless: Serverless & { classes: { Error: typeof Error } },
-    serverless: Serverless,
-    options: ServerlessPluginOptions
-  ) {
+  sharedIAMRoleCount: number;
+  sharedIAMRoleARN: string;
+  constructor(serverless: Serverless, options: ServerlessPluginOptions) {
     this.serverless = serverless;
     this.extendedServerless = serverless as Serverless & {
       classes: { Error: typeof Error };
@@ -56,88 +53,104 @@ export class ServerlessPipes {
     );
     if (!Object.keys(config).length) return;
     this.config = config;
+    this.sharedIAMRoleARN = "EventBridgePipesSharedIAMRole";
+    this.sharedIAMRoleCount = 0;
   }
 
   buildEventBridgePipes(): void {
-    const PipeName = Object.keys(this.config)[0];
+    for (const pipe of Object.keys(this.config)) {
+      // validate input
+      this.validateInput();
 
-    // validate input
-    this.validateInput();
+      // pipe description
+      const pipesDescription: string = this.config[pipe]?.description || "";
 
-    const pipesDescription: string = this.config[PipeName]?.description || "";
-    // const pipesDesiredState: string = this.config[PipeName]?.desiredState || "";
+      // get pipe desiredState
+      const pipesDesiredState: AWSPipesPipeRequestedPipeStateDefinition =
+        getDesiredStateOfPipe(this.config[pipe]);
 
-    // get pipe desiredState
-    const pipesDesiredState: AWSPipesPipeRequestedPipeStateDefinition =
-      getDesiredStateOfPipe(this.config, PipeName);
+      // get source ARN
+      const sourceARN: string = getSourceArn(this.config[pipe]);
+      sourceARN.length && this.validateArn(sourceARN, "source", pipe);
 
-    // get source ARN
-    const sourceARN: string = getSourceArn(this.config, PipeName);
-    sourceARN.length ? this.validateArn(sourceARN, "source") : null;
+      // get target ARN
+      const targetARN: string = getTargetArn(this.config[pipe]);
+      targetARN.length && this.validateArn(targetARN, "target", pipe);
 
-    // get target ARN
-    const targetARN: string = getTargetArn(this.config, PipeName);
-    targetARN.length ? this.validateArn(targetARN, "target") : null;
+      // get source parameters
+      const sourceCompiledResources: AWSPipesPipePipeSourceParametersDefinition =
+        compileBasedOnSourceType(this.config[pipe]);
 
-    // get source parameters
-    const sourceCompiledResources: AWSPipesPipePipeSourceParametersDefinition =
-      compileBasedOnSourceType(this.config, PipeName);
+      // get target parameters
+      const targetCompiledResources: AWSPipesPipePipeTargetParametersDefinition =
+        compileBasedOnTargetType(this.config[pipe]);
 
-    // get target parameters
-    const targetCompiledResources: AWSPipesPipePipeTargetParametersDefinition =
-      compileBasedOnTargetType(this.config, PipeName);
+      // get filter parameters
+      const filterParameters: AWSPipesPipePipeSourceParametersDefinition =
+        compileFilterPatterns(this.config[pipe]);
 
-    // get filter parameters
-    const filterParameters: AWSPipesPipePipeSourceParametersDefinition =
-      compileFilterPatterns(this.config, PipeName);
-
-    // get enrichment parameters
-    const enrichmentParameters: EnrichmentParameter = {
-      FunctionName: this.config[PipeName]?.enrichment?.name || "",
-    };
-
-    // create pipes resource template
-    const PipesTemplate = this.generatePipesResourceStack(
-      PipeName,
-      pipesDescription,
-      pipesDesiredState,
-      sourceARN,
-      targetARN,
-      sourceCompiledResources,
-      targetCompiledResources,
-      filterParameters,
-      enrichmentParameters
-    );
-
-    // create iam roles resource template
-    const iamRolesPipes = this.generateIAMRole();
-
-    // merge the pipes & iam roles template in the main template of application
-    const template =
-      this.serverless.service.provider.compiledCloudFormationTemplate;
-
-    if (this.config[PipeName]?.iamRolePipes?.type.length > 0) {
-      template.Resources = {
-        ...template.Resources,
-        ...iamRolesPipes.Resources,
-        ...PipesTemplate.Resources,
+      // get enrichment parameters
+      const enrichmentParameters: EnrichmentParameter = {
+        FunctionName: this.config[pipe]?.enrichment?.name || "",
       };
-    } else {
-      template.Resources = {
-        ...template.Resources,
-        ...PipesTemplate.Resources,
-      };
+
+      // create pipes resource template
+      const PipesTemplate = this.generatePipesResourceStack(
+        pipe,
+        pipesDescription,
+        pipesDesiredState,
+        sourceARN,
+        targetARN,
+        sourceCompiledResources,
+        targetCompiledResources,
+        filterParameters,
+        enrichmentParameters
+      );
+
+      // create iam roles resource template
+      const iamRolesPipes = this.generateIAMRole(pipe);
+      this.config[pipe]?.iamRolePipes?.type === "shared" &&
+        this.sharedIAMRoleCount++;
+
+      // merge the pipes & iam roles template in the main template of application
+      const template =
+        this.serverless.service.provider.compiledCloudFormationTemplate;
+
+      if (
+        this.config[pipe]?.iamRolePipes?.type.length > 0 ||
+        this.sharedIAMRoleCount === 1
+      ) {
+        template.Resources = {
+          ...template.Resources,
+          ...iamRolesPipes.Resources,
+          ...PipesTemplate.Resources,
+        };
+      } else {
+        template.Resources = {
+          ...template.Resources,
+          ...PipesTemplate.Resources,
+        };
+      }
     }
   }
 
-  generateIAMRole(): Record<string, any> {
-    const PipeName = Object.keys(this.config)[0];
+  generateIAMRole(PipeName: string): Record<string, any> {
+    // CF Resource Template for IAM Role for EventBridgePipes
     return {
       Resources: {
-        [`${PipeName}PipesIAMRole`]: {
+        [this.config[PipeName]?.iamRolePipes?.type === "individual"
+          ? `${PipeName}PipesIAMRole`
+          : this.config[PipeName]?.iamRolePipes?.type === "shared"
+          ? this.sharedIAMRoleARN
+          : ""]: {
           Type: "AWS::IAM::Role",
           Properties: {
-            RoleName: `${PipeName}-pipes-iam-role`,
+            RoleName:
+              this.config[PipeName]?.iamRolePipes?.type === "individual"
+                ? `${PipeName}-pipes-iam-role`
+                : this.config[PipeName]?.iamRolePipes?.type === "shared"
+                ? "shared-pipes-iam-role"
+                : "",
             AssumeRolePolicyDocument: {
               Version: "2012-10-17",
               Statement: [
@@ -187,11 +200,16 @@ export class ServerlessPipes {
     filterParameters: AWSPipesPipePipeSourceParametersDefinition,
     enrichmentParameters: EnrichmentParameter
   ): Record<string, any> {
+    // individual iamRolePipes type pipes name
     const pipesIamRoleLogicalName = `${pipeName}PipesIAMRole`;
+
+    // generating final SourceParameters
     const pipesSourceProperty = {
       ...sourceParameters,
       ...filterParameters,
     };
+
+    // generating Enrichment Lambda Function Arn
     let enrichmentFunctionArn: string | Record<string, any> = {};
     if (enrichmentParameters.FunctionName !== "") {
       if (
@@ -211,6 +229,20 @@ export class ServerlessPipes {
         );
       }
     }
+
+    // generating IAM Role ARN for EventBridge Pipes
+    const RoleArn: string =
+      this.config[pipeName].iamRolePipes?.type.length > 0
+        ? this.config[pipeName].iamRolePipes?.type === "shared"
+          ? { "Fn::GetAtt": [`${this.sharedIAMRoleARN}`, "Arn"] }
+          : { "Fn::GetAtt": [`${pipesIamRoleLogicalName}`, "Arn"] }
+        : this.serverless.service.provider["iamRoleStatements"].length > 0
+        ? this.serverless.providers["aws"].naming.getRoleName(
+            this.serverless.service.provider["iamRoleStatements"]
+          )
+        : "";
+
+    // CF Resource Template for EventBridgePipes
     const Resources = {
       [pipeName + "EventBridgePipes"]: {
         Type: "AWS::Pipes::Pipe",
@@ -222,14 +254,7 @@ export class ServerlessPipes {
           SourceParameters: pipesSourceProperty,
           TargetParameters: targetParameters,
           Enrichment: enrichmentFunctionArn,
-          RoleArn:
-            this.config[pipeName].iamRolePipes?.type.length > 0
-              ? { "Fn::GetAtt": [`${pipesIamRoleLogicalName}`, "Arn"] }
-              : this.serverless.service.provider["iamRoleStatements"].length > 0
-              ? this.serverless.providers["aws"].naming.getRoleName(
-                  this.serverless.service.provider["iamRoleStatements"]
-                )
-              : "",
+          RoleArn,
         },
       },
     };
@@ -288,22 +313,25 @@ export class ServerlessPipes {
     }
   }
 
-  validateArn(arn: string | Record<string, any>, type: string): void {
+  validateArn(
+    arn: string | Record<string, any>,
+    type: string,
+    pipe: string
+  ): void {
     const arnRegex = new RegExp(
       "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-d{1})?:(d{12})?:(.+)$"
     );
     if (typeof arn === "object") arn = Object.keys(arn)[0];
-    console.log("arn :: ", arn, " for type:: ", type);
     if (
       !(
         arn?.startsWith("Ref") ||
-        arn?.startsWith("Fn::GetAtt") ||
-        arn?.startsWith("Fn::Sub") ||
+        arn?.startsWith("Fn::GetAtt:") ||
+        arn?.startsWith("Fn::Sub:") ||
         arnRegex?.test(arn)
       )
     ) {
       throw new this.extendedServerless["classes"].Error(
-        `EventBridge Pipes Resource creation Failed: arn property is invalid for ${type}`
+        `EventBridge Pipes Resource creation Failed: arn property is invalid for ${pipe}.${type}`
       );
     }
   }
