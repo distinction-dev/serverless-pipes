@@ -1,12 +1,13 @@
 import Serverless from "serverless";
 import { FromSchema } from "json-schema-to-ts";
 import { schema } from "./schema";
+import * as _ from "lodash";
 import {
   EnrichmentParameter,
   getEnrichmentLambdaFunctionIAMRole,
   getSharedIAMRole,
 } from "./models";
-import { get, removeEmptyProperties } from "./util";
+import { removeEmptyProperties } from "./util";
 import Ajv from "ajv";
 import {
   compileBasedOnSourceType,
@@ -37,6 +38,8 @@ export class ServerlessPipes {
   sharedIAMRoleARN: string;
   constructor(serverless: Serverless, options: ServerlessPluginOptions) {
     this.serverless = serverless;
+    this.sharedIAMRoleARN = "EventBridgePipesSharedIAMRole";
+    this.sharedIAMRoleCount = 0;
     this.extendedServerless = serverless as Serverless & {
       classes: { Error: typeof Error };
     };
@@ -46,15 +49,13 @@ export class ServerlessPipes {
     };
     type pipesSchema = FromSchema<typeof schema>;
     this.serverless.configSchemaHandler.defineTopLevelProperty("pipes", schema);
-    const config: pipesSchema = get(
+    const config: pipesSchema = _.get(
       this.serverless,
       "configurationInput.pipes",
       {}
     );
     if (!Object.keys(config).length) return;
     this.config = config;
-    this.sharedIAMRoleARN = "EventBridgePipesSharedIAMRole";
-    this.sharedIAMRoleCount = 0;
   }
 
   buildEventBridgePipes(): void {

@@ -1,11 +1,3 @@
-export const get: any = (obj: any, path: string, def: any) =>
-  path
-    .split(".")
-    .filter(Boolean)
-    .every(step => !(step && (obj = obj[step]) === undefined))
-    ? obj
-    : def;
-
 export function removeEmptyProperties(
   obj: Record<string, any>
 ): Record<string, any> {
