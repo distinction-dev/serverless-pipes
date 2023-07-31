@@ -8,9 +8,7 @@
 pipes:
   pipeName:
     filter:
-      - Pattern: 'pattern1'
-      - Pattern: 'pattern2'
-      ...
+      - Pattern: 'json-stringified-patterns'
 ```
 
 
@@ -29,7 +27,7 @@ filter property contains array of objects. Pattern is the key in each object
 
 #### Defined in
 
-[schema.ts:308](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L308)
+[schema.ts:276](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L276)
 
 ## Properties
 
@@ -42,7 +40,7 @@ The filtering pattern (in `JSON` encoded string format) used to filter the sourc
 
 #### Defined in
 
-[schema.ts:216](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L216)
+[schema.ts:216](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L216)
 
 
 ---

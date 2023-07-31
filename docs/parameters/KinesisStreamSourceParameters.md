@@ -1,5 +1,6 @@
 [@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / KinesisStreamSourceParameters
 
+It defines KinesisStream as the source for the EventBridge Pipes.
 # Usage: 
 ```yaml
 
@@ -39,7 +40,7 @@ The arn of the event source.
 
 #### Defined in
 
-[schema.ts:57](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L57)
+[schema.ts:57](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L57)
 
 ### batchsize (optional)
 
@@ -50,7 +51,7 @@ The maximum number of records to include in each batch.
 
 #### Defined in
 
-[schema.ts:67](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L67)
+[schema.ts:67](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L67)
 
 ### deadLetterArn (optional)
 
@@ -60,7 +61,7 @@ Define the target queue arn to send dead-letter queue events to.
 
 #### Defined in
 
-[models.ts:70](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L70)
+[schema.ts:70](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L70)
 
 
 ### maximumBatchingWindow (optional)
@@ -71,7 +72,7 @@ The maximum length of a time to wait for events.
 
 #### Defined in
 
-[models.ts:80](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L80)
+[schema.ts:80](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L80)
 
 
 ### maximumRetryAttempts (optional)
@@ -82,7 +83,7 @@ Discard records after the specified number of retries. The default value is -1, 
 
 #### Defined in
 
-[models.ts:87](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L87)
+[schema.ts:87](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L87)
 
 ### maximumRecordAgeInSeconds (optional)
 
@@ -92,7 +93,7 @@ Discard records older than the specified age. The default value is -1, which set
 
 #### Defined in
 
-[models.ts:83](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L83)
+[schema.ts:83](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L83)
 
 
 
@@ -104,7 +105,7 @@ Define how to handle item process failures. `AUTOMATIC_BISECT` halves each batch
 
 #### Defined in
 
-[models.ts:91](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L91)
+[schema.ts:91](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L91)
 
 
 ### parallelizationFactor (optional)
@@ -116,7 +117,7 @@ The number of batches to process concurrently from each shard. The default value
 
 #### Defined in
 
-[models.ts:95](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L95)
+[schema.ts:95](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L95)
 
 
 ### startingPosition (optional)
@@ -129,7 +130,7 @@ Valid values: `TRIM_HORIZON` | `LATEST`
 
 #### Defined in
 
-[models.ts:99](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L99)
+[schema.ts:99](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L99)
 
 
 ### startingPositionTimestamp (optional)
@@ -141,6 +142,6 @@ With StartingPosition set to `AT_TIMESTAMP`, the time from which to start readin
 
 #### Defined in
 
-[models.ts:103](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L103)
+[schema.ts:103](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L103)
 
 ---

@@ -8,6 +8,9 @@ Creates the EventBridge Pipes CloudFormation Resources as per the plugin defined
 - [options](#options)
 - [config](#config)
 - [hooks](#hooks)
+- [extendedServerless](#extendedServerless)
+- [sharedIAMRoleCount](#sharedIAMRoleCount)
+- [sharedIAMRoleARN](#sharedIAMRoleARN)
 
 ## Methods
 
@@ -26,7 +29,7 @@ Defined in [Functions](../functions/functions.md)
 
 #### Defined in
 
-[index.ts:32](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/index.ts#L32)
+[index.ts:39](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L39)
 
 ## Properties
 
@@ -38,7 +41,7 @@ Contains the information from the serverless.yml file
 
 #### Defined in
 
-[index.ts:28](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/index.ts#L28)
+[index.ts:32](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L32)
 
 ---
 
@@ -50,7 +53,7 @@ Contains the options for Serverless Plugin
 
 #### Defined in
 
-[index.ts:29](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/index.ts#L29)
+[index.ts:33](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L33)
 
 ### config
 
@@ -60,7 +63,7 @@ Defines the config property from the configurationInput of serverless object
 
 #### Defined in
 
-[index.ts:30](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/index.ts#L30)
+[index.ts:34](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L34)
 
 
 ### hooks
@@ -71,5 +74,36 @@ Bind the plugin building logic for the pipes
 
 #### Defined in
 
-[index.ts:31](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/index.ts#L31)
+[index.ts:35](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L35)
 
+
+### extendedServerless
+
+• `Private` **extendedServerless**: `Serverless & { classes: { Error: typeof Error } };`
+
+Extended serverless object with the capability of throwing errors via ServerlessPipes
+
+#### Defined in
+
+[index.ts:36](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L36)
+
+
+### sharedIAMRoleCount
+
+• `Private` **sharedIAMRoleCount**: `number`
+
+Maintains the count for shared iam role type of pipes
+
+#### Defined in
+
+[index.ts:37](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L37)
+
+### sharedIAMRoleARN
+
+• `Private` **sharedIAMRoleARN**: `string`
+
+Constant ARN for shared iam role type of pipes
+
+#### Defined in
+
+[index.ts:38](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/index.ts#L38)

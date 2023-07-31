@@ -27,7 +27,7 @@ Following AWS services are supported as the source:
 
 #### Defined in
 
-[schema.ts:307](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L307)
+[schema.ts:275](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L275)
 
 
 ---

@@ -1,5 +1,6 @@
 [@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / DynamoDBSourceParameters
 
+It defines DynamoDB as the source for the EventBridge Pipes.
 # Usage: 
 ```yaml
 
@@ -38,7 +39,7 @@ The arn of the event source.
 
 #### Defined in
 
-[schema.ts:4](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L4)
+[schema.ts:4](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L4)
 
 ### batchsize (optional)
 
@@ -49,7 +50,7 @@ The maximum number of records to include in each batch.
 
 #### Defined in
 
-[schema.ts:14](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L14)
+[schema.ts:14](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L14)
 
 ### deadLetterArn (optional)
 
@@ -59,7 +60,7 @@ Define the target queue arn to send dead-letter queue events to.
 
 #### Defined in
 
-[models.ts:17](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L17)
+[schema.ts:17](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L17)
 
 
 ### maximumBatchingWindow (optional)
@@ -70,7 +71,7 @@ The maximum length of a time to wait for events.
 
 #### Defined in
 
-[models.ts:27](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L27)
+[schema.ts:27](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L27)
 
 
 ### maximumRetryAttempts (optional)
@@ -81,7 +82,7 @@ Discard records after the specified number of retries. The default value is -1, 
 
 #### Defined in
 
-[models.ts:34](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L34)
+[schema.ts:34](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L34)
 
 ### maximumRecordAgeInSeconds (optional)
 
@@ -91,7 +92,7 @@ Discard records older than the specified age. The default value is -1, which set
 
 #### Defined in
 
-[models.ts:30](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L30)
+[schema.ts:30](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L30)
 
 
 
@@ -103,7 +104,7 @@ Define how to handle item process failures. `AUTOMATIC_BISECT` halves each batch
 
 #### Defined in
 
-[models.ts:38](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L38)
+[schema.ts:38](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L38)
 
 
 ### parallelizationFactor (optional)
@@ -115,7 +116,7 @@ The number of batches to process concurrently from each shard. The default value
 
 #### Defined in
 
-[models.ts:42](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L42)
+[schema.ts:42](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L42)
 
 
 ### startingPosition (optional)
@@ -128,7 +129,7 @@ Valid values: `TRIM_HORIZON` | `LATEST`
 
 #### Defined in
 
-[models.ts:46](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L46)
+[schema.ts:46](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L46)
 
 
 ---
