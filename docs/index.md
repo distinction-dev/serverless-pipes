@@ -1,6 +1,7 @@
-[@distinction-dev/serverless-pipes](README.md) / Exports
+[serverless-pipes](README.md) / Exports
 
-# @distinction-dev/serverless-pipes
+# serverless-pipes
+Serverless Framework plugin called as "pipes", used to create EventBridge Pipes by providing the required event sources, targets and other parameters as needed.
 
 ## Table of contents
 
@@ -23,18 +24,3 @@
 - [generatePipesResourceStack](functions/functions.md#generatePipesResourceStack)
 - [validateInput](functions/functions.md#validateInput)
 - [validateArn](functions/functions.md#validateArn)
-
-### Resource Compilation Functions
-
-- [getSourceArn](compiler/compiler.md#getSourceArn)
-- [getTargetArn](compiler/compiler.md#getTargetArn)
-- [compileBasedOnSourceType](compiler/compiler.md#compileBasedOnSourceType)
-- [compileFilterPatterns](compiler/compiler.md#compileFilterPatterns)
-- [compileBasedOnTargetType](compiler/compiler.md#compileBasedOnTargetType)
-
-
-### Util Functions
-
-- [get](utils/util.md#get)
-- [removeEmptyProperties](utils/util.md#removeEmptyProperties)
-

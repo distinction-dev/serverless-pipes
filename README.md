@@ -1,3 +1,4 @@
+
 # Serverless Pipes Plugin
 
 Serverless Framework plugin called as "pipes", used to create EventBridge Pipes by providing the required event sources, targets and other parameters as needed.
@@ -5,13 +6,13 @@ Serverless Framework plugin called as "pipes", used to create EventBridge Pipes 
 ## Install
 
 ```bash
-npm install @distinction-dev/serverless-pipes
+npm install serverless-pipes
 ```
 
 or
 
 ```bash
-yarn add @distinction-dev/serverless-pipes
+yarn add serverless-pipes
 ```
 
 ## Allowed Services
@@ -20,20 +21,20 @@ At the initial version of the plugin, the below mentioned AWS services are suppo
 
 ### Source
 
-- SQS
-- DynamoDB
-- Kinesis Streams
+- [SQS](docs/parameters/SQSSourceParameters.md)
+- [DynamoDB](docs/parameters/DynamoDBSourceParameters.md)
+- [Kinesis Streams](docs/parameters/KinesisStreamSourceParameters.md)
 
 ### Target
 
-- SQS
-- SNS
-- Step Function
-- Lambda Function
+- [SQS](docs/parameters/SQSTargetParameters.md)
+- [SNS](docs/parameters/SNSTargetParameters.md)
+- [Step Function](docs/parameters/StepFunctionTargetParameters.md)
+- [Lambda Function](docs/parameters/LambdaFunctionTargetParameters.md)
 
 ### Enrichment
 
-- Lambda Function
+- [Lambda Function](docs/parameters/EnrichmentParameters.md)
 
 
 
@@ -59,18 +60,7 @@ pipes:
     enrichment: 
       name: pipeEnricher
     iamRolePipes:
-      statements:
-        - Effect: Allow
-          Action:
-            - sns:Subscribe
-            - sns:Publish
-          Resource: '*'
-        - Effect: Allow
-          Action:
-            - sqs:ReceiveMessage
-            - sqs:DeleteMessage
-            - sqs:GetQueueAttributes
-          Resource: '*'
+      type: "individual"
 
 ```
 

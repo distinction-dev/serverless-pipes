@@ -1,5 +1,6 @@
 [@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / SNSTargetParameters
 
+It defines SNS as the target for the EventBridge Pipes.
 # Usage
 ```yaml
 
@@ -30,7 +31,7 @@ The arn of the event target.
 
 #### Defined in
 
-[schema.ts:136](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L136)
+[schema.ts:136](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L136)
 
 
 ---

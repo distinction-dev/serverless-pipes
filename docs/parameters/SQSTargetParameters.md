@@ -1,5 +1,7 @@
 [@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / SQSTargetParameters
 
+It defines SQS as the target for the EventBridge Pipes.
+
 # Usage
 ```yaml
 
@@ -32,7 +34,7 @@ The arn of the event target.
 
 #### Defined in
 
-[schema.ts:189](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L189)
+[schema.ts:195](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L195)
 
 ### messageDeduplicationId (optional)
 
@@ -45,7 +47,7 @@ The token used for deduplication of sent messages.
 
 #### Defined in
 
-[schema.ts:199](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L199)
+[schema.ts:205](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L205)
 
 
 ### messageGroupId (optional)
@@ -57,6 +59,6 @@ The FIFO message group ID to use as the target.
 
 #### Defined in
 
-[schema.ts:200](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L200)
+[schema.ts:206](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L206)
 
 ---

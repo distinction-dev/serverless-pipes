@@ -8,88 +8,42 @@
 pipes:
   pipeName:
     iamRolePipes:
-      statements:
-        - Effect: Allow
-          Action:
-            - sns:Subscribe
-            - sns:Publish
-          Resource: '*'
-        - Effect: Allow
-          Action:
-            - sqs:ReceiveMessage
-            - sqs:DeleteMessage
-            - sqs:GetQueueAttributes
-          Resource: '*'
-        ...
+      type: "individual"
 ```
 
 
 ### iamRolePipes
 
 
+It is used to generate the IAM role statements based on the given type for the EventBridge Pipes. Two possible values can be there: 
+ - shared
+ - individual
 
-It defines the iam role statements for the EventBridge Pipes. The iam role statements allow the pipes to access the source/target to perform the required actions.
+The IAM role statements allow the pipes to access the source/target to perform the required actions.
 
 
 ### Properties
  
- - [statements](IAMRoleParameter.md#statements)
+ - [type](IAMRoleParameter.md#type)
  
 
 #### Defined in
 
-[schema.ts:280](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L280)
+[schema.ts:256](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L256)
 
 ## Properties
 
-### statements
+### type
 
-• **statements**: `array`
+• **type**: `string`
 
-It contains the iam role statements array of objects which define the required access on the required Resource.
-
-Objects have the following properties:
-
-- [Effect](IAMRoleParameter.md#Effect)
-- [Action](IAMRoleParameter.md#Action)
-- [Resource](IAMRoleParameter.md#Resource)
+It defines the type of IAM role required to be generated for the EventBridge Pipes. Two possible values can be there: 
+ - shared (creates a single IAM role which is shared among all the pipes created in the application)
+ - individual (creates a seperate IAM role per pipe based on the source & target of the pipe)
 
 
-
-### Effect
-
-• **Effect**: `string`
-
-Defines if the iam role `Allow` or `Deny` the access to the pipes.
+Note: "shared" type IAM role permits all the possible access to the pipes. So, use it based on the use case in the application.
 
 
-#### Defined in
-
-[schema.ts:285](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L285)
-
-
-### Action
-
-• **Action**: `string`
-
-Defines what actions are granted or denied for the EventBridge pipes.
-
-
-#### Defined in
-
-[schema.ts:286](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L286)
-
-
-
-### Resource
-
-• **Resource**: `string`
-
-Defines on which AWS Resource the access is granted or denied for the EventBridge pipes.
-
-
-#### Defined in
-
-[schema.ts:287](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L287)
 
 ---

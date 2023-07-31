@@ -25,7 +25,7 @@ Following AWS services are supported as the target:
 
 #### Defined in
 
-[schema.ts:309](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L309)
+[schema.ts:277](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L277)
 
 
 ---

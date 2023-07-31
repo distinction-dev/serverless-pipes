@@ -12,17 +12,16 @@ ___
 
 ### generateIAMRole
 
-▸ **generateIAMRole**(): `object`
+▸ **generateIAMRole**(`PipeName`): `object`
 
-Used to generate & return the IAM Role CloudFormation Template based on the iamRolePipes property of pipes plugin for the service `pipes.amazonaws.com` with the Action : `sts:AssumeRole`
+Used to generate & return the IAM Role CloudFormation Template based on the iamRolePipes property of pipes plugin for the service `pipes.amazonaws.com` with the Action : `sts:AssumeRole` for the specified `PipeName`
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `method` | [`HttpVerbsEnum`](enums/HttpVerbsEnum.md) | The method type of this route |
-| `path` | `string` | The resource path of this route |
-| `conditions` | [`AwsPolicyCondition`](modules#awspolicycondition)[] | - |
+| `PipeName` | `string` | Name of event bridge pipe |
+
 ___
 
 ### generatePipesResourceStack
@@ -47,25 +46,21 @@ Used to generate & return the EventBridge Pipes CloudFormation Template based on
 
 ### validateInput
 
-▸ **validateInput**(`PipeName`): `void`
+▸ **validateInput**(): `void`
 
 Validates the input received for the pipes plugin.
 
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `PipeName` | `string` | The name of pipes plugin |
 
 ### validateArn
 
-▸ **validateArn**(`arn`, `type`): `void`
+▸ **validateArn**(`arn`, `type`, `pipe`): `void`
 
-Validates the arn passed for the specific type.
+Validates the arn passed for the specific type & pipe.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `arn` | `string` / `object` | The arn passed as string or object to validate |
 | `type` | `string` | The arn type (source / target) for which it is created |
+| `pipe` | `string` | Name of event bridge pipe |
 
 ___

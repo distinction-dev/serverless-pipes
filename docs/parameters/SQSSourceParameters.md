@@ -1,5 +1,7 @@
 [@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / SQSSourceParameters
 
+It defines SQS as the source for the EventBridge Pipes.
+
 # Usage: 
 ```yaml
 
@@ -33,7 +35,7 @@ The arn of the event source.
 
 #### Defined in
 
-[schema.ts:113](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L113)
+[schema.ts:113](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L113)
 
 ### batchsize (optional)
 
@@ -44,7 +46,7 @@ The maximum number of records to include in each batch.
 
 #### Defined in
 
-[schema.ts:123](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L123)
+[schema.ts:123](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L123)
 
 ### maximumBatchingWindow (optional)
 
@@ -54,7 +56,7 @@ The maximum length of a time to wait for events.
 
 #### Defined in
 
-[models.ts:126](https://github.com/distinction-dev/serverless-pipes/blob/bafcd10b595a304cf2a2f2f7cf109be3ea8504f2/src/schema.ts#L126)
+[schema.ts:126](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L126)
 
 
 ---
