@@ -1,27 +1,133 @@
 service: test-service
+frameworkVersion: '^3.28.1'
+useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
+  region: ${self:custom.region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sns:Subscribe
+        - sns:Publish
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: '*'
+
+custom:
+  region: ${opt:region, "ap-south-1"}
 
 plugins:
   localPath: "../lib/index.js"
   modules:
     - ""
+
+pipes:
+  testPipe:
+    enabled: true
+    source:
+      sqs:
+        arn:
+          Fn::GetAtt: [SourceSQSQueue, Arn]
+        # batchsize: 3
+        # maximumBatchingWindow: 5
+    target:
+      sns:
+        arn:
+          Fn::GetAtt: [TargetSNSTopic, TopicArn]
+    enrichment: 
+      name: pipes-enrichment
+    filter:
+      - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+    iamRolePipes:
+      type: "individual"
+  # pipeTwo:
+  #   enabled: false
+  #   source:
+  #     dynamodb:
+  #       arn:
+  #         Fn::GetAtt: [SourceSQSQueue, Arn]
+  #       startingPosition: "TRIM_HORIZON"
+  #       # batchsize: 3
+  #       # maximumBatchingWindow: 5
+  #   target:
+  #     sqs:
+  #       arn:
+  #         Fn::GetAtt: [TargetSNSTopic, TopicArn]
+  #   enrichment: 
+  #     name: pipes-enrichment-two
+  #   filter:
+  #     - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+  #   iamRolePipes:
+  #     type: "shared"
+  # pipeThree:
+  #   enabled: false
+  #   source:
+  #     dynamodb:
+  #       arn:
+  #         Fn::GetAtt: [SourceSQSQueue, Arn]
+  #       startingPosition: "TRIM_HORIZON"
+  #       # batchsize: 3
+  #       # maximumBatchingWindow: 5
+  #   target:
+  #     sqs:
+  #       arn:
+  #         Fn::GetAtt: [TargetSNSTopic, TopicArn]
+  #   enrichment: 
+  #     name: pipes-enrichment-two
+  #   filter:
+  #     - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+  #   iamRolePipes:
+  #     type: "shared"
+        
+
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - schedule:
-          rate: cron(0 10 * * ? *)
-          name: test-crontab
-          timezone: America/New_York
-      - schedule:
-          rate: cron(0 5 * * ? *)
-          timezone: America/New_York
-      - schedule:
-          rate:
-            - cron(0 5 * * ? *)
-            - cron(0 6 * * ? *)
-          timezone: America/New_York
-validate: true
+  pipes-enrichment:
+    handler: ./functions/enrichment.handler
+  pipes-enrichment-two:
+    handler: ./functions/enrichment.handler
+
+resources:
+  Resources:
+    SourceSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: "SourceQueue"
+    SubscriberSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: "SubscriberQueue"
+    SubscriberSNSPolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Resource: 
+                Fn::GetAtt: [SubscriberSQSQueue, Arn]
+              Principal:
+                Service:
+                  - 'sns.amazonaws.com'
+        Queues:
+          - { Ref: SubscriberSQSQueue }
+    TargetSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        Subscription:
+          - Endpoint:
+              Fn::GetAtt: [SubscriberSQSQueue, Arn]
+            Protocol: sqs
+        TopicName: "TargetSNSTopic"
+
+
