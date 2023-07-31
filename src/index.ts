@@ -72,11 +72,13 @@ export class ServerlessPipes {
 
       // get source ARN
       const sourceARN: string = getSourceArn(this.config[pipe]);
-      sourceARN.length && this.validateArn(sourceARN, "source", pipe);
+      Object.keys(sourceARN).length &&
+        this.validateArn(sourceARN, "source", pipe);
 
       // get target ARN
       const targetARN: string = getTargetArn(this.config[pipe]);
-      targetARN.length && this.validateArn(targetARN, "target", pipe);
+      Object.keys(targetARN).length &&
+        this.validateArn(targetARN, "target", pipe);
 
       // get source parameters
       const sourceCompiledResources: AWSPipesPipePipeSourceParametersDefinition =
@@ -168,7 +170,7 @@ export class ServerlessPipes {
               this.config[PipeName]?.iamRolePipes?.type === "individual"
                 ? [
                     {
-                      PolicyName: "EventBridgePipesPolicy",
+                      PolicyName: `${PipeName}PipesIAMPolicy`,
                       PolicyDocument: {
                         Version: "2012-10-17",
                         Statement: [
@@ -182,7 +184,15 @@ export class ServerlessPipes {
                     },
                   ]
                 : this.config[PipeName]?.iamRolePipes?.type === "shared"
-                ? [getSharedIAMRole().Statement]
+                ? [
+                    {
+                      PolicyName: "EventBridgePipesSharedPolicy",
+                      PolicyDocument: {
+                        Version: "2012-10-17",
+                        Statement: [getSharedIAMRole().Statement],
+                      },
+                    },
+                  ]
                 : [],
           },
         },
@@ -218,6 +228,7 @@ export class ServerlessPipes {
           enrichmentParameters.FunctionName
         )
       ) {
+        // @ts-ignore
         const enrichmentFunctionName: string = this.serverless.providers[
           "aws"
         ].naming.getNormalizedFunctionName(enrichmentParameters.FunctionName);
@@ -237,8 +248,11 @@ export class ServerlessPipes {
         ? this.config[pipeName].iamRolePipes?.type === "shared"
           ? { "Fn::GetAtt": [`${this.sharedIAMRoleARN}`, "Arn"] }
           : { "Fn::GetAtt": [`${pipesIamRoleLogicalName}`, "Arn"] }
-        : this.serverless.service.provider["iamRoleStatements"].length > 0
-        ? this.serverless.providers["aws"].naming.getRoleName(
+        : // @ts-ignore
+        this.serverless.service.provider["iamRoleStatements"].length > 0
+        ? // @ts-ignore
+          this.serverless.providers["aws"].naming.getRoleName(
+            // @ts-ignore
             this.serverless.service.provider["iamRoleStatements"]
           )
         : "";
@@ -296,6 +310,13 @@ export class ServerlessPipes {
           const message: string = error?.message;
           const path: string = error?.instancePath;
           errorMessage += `At ${path} path, it ${message} or should have all its required properties, `;
+        } else if (error.keyword === "enum") {
+          const message: string = error?.message;
+          const path: string = error?.instancePath;
+          const params: Array<string> = error?.params?.allowedValues;
+          errorMessage += `At ${path} path - ${message} : ${JSON.stringify(
+            params
+          )}, `;
         } else {
           const message: string = error?.message;
           const path: string = error?.instancePath;
@@ -326,8 +347,8 @@ export class ServerlessPipes {
     if (
       !(
         arn?.startsWith("Ref") ||
-        arn?.startsWith("Fn::GetAtt:") ||
-        arn?.startsWith("Fn::Sub:") ||
+        arn?.startsWith("Fn::GetAtt") ||
+        arn?.startsWith("Fn::Sub") ||
         arnRegex?.test(arn)
       )
     ) {
