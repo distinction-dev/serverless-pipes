@@ -11,6 +11,7 @@ Serverless Framework plugin called as "pipes", used to create EventBridge Pipes 
 
 ### Serverless Pipes Plugin Parameters
 
+- [enabled](parameters/EnabledParameter.md)
 - [source](parameters/SourceParameter.md)
 - [target](parameters/TargetParameter.md)
 - [filter](parameters/FilterParameter.md)
