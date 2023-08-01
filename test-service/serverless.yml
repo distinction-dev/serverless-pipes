@@ -1,4 +1,4 @@
-service: test-service
+service: serverless-pipes-plugin
 frameworkVersion: '^3.28.1'
 useDotenv: true
 

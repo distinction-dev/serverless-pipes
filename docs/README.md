@@ -48,17 +48,20 @@ functions:
         handler: functions/pipeEnricher.handler
 
 pipes:
-  testPipe: #pipesName
+ testPipe: #pipeName
+    enabled: true
     source:
       sqs:
         arn:
           Fn::GetAtt: [SourceSQSQueue, Arn]
     target:
-      sqs:
+      sns:
         arn:
           Fn::GetAtt: [TargetSNSTopic, TopicArn]
     enrichment: 
       name: pipeEnricher
+    filter:
+      - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
     iamRolePipes:
       type: "individual"
 
