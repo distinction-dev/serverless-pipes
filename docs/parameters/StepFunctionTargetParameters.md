@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / StepFunctionTargetParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / StepFunctionTargetParameters
 
 It defines StepFunction as the target for the EventBridge Pipes.
 # Usage

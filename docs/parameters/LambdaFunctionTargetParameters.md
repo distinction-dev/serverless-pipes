@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / LambdaFunctionTargetParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / LambdaFunctionTargetParameters
 
 It defines LambdaFunction as the target for the EventBridge Pipes.
 # Usage

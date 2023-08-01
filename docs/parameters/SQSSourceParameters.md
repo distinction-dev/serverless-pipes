@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / SQSSourceParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / SQSSourceParameters
 
 It defines SQS as the source for the EventBridge Pipes.
 

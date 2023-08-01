@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / EnrichmentParameters.md
+[serverless-pipes](../README.md) / [Exports](parameters.md) / EnrichmentParameters.md
 
 It defines LambdaFunction as the enrichment for the EventBridge Pipes.
 

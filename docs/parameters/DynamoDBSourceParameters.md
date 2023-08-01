@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / DynamoDBSourceParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / DynamoDBSourceParameters
 
 It defines DynamoDB as the source for the EventBridge Pipes.
 # Usage: 

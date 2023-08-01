@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / EnabledParameter
+[serverless-pipes](../README.md) / [Exports](parameters.md) / EnabledParameter
 
 # Usage
 ```yaml

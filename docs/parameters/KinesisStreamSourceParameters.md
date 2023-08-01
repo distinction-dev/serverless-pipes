@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / KinesisStreamSourceParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / KinesisStreamSourceParameters
 
 It defines KinesisStream as the source for the EventBridge Pipes.
 # Usage: 
