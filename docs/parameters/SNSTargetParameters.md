@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / SNSTargetParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / SNSTargetParameters
 
 It defines SNS as the target for the EventBridge Pipes.
 # Usage

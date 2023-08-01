@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / IAMRoleParameter
+[serverless-pipes](../README.md) / [Exports](parameters.md) / IAMRoleParameter
 
 # Usage
 ```yaml

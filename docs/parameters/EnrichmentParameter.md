@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / EnrichmentParameter
+[serverless-pipes](../README.md) / [Exports](parameters.md) / EnrichmentParameter
 
 # Usage
 ```yaml

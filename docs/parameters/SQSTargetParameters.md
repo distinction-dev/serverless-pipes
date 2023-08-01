@@ -1,4 +1,4 @@
-[@distinction-dev/serverless-pipes](../README.md) / [Exports](parameters.md) / SQSTargetParameters
+[serverless-pipes](../README.md) / [Exports](parameters.md) / SQSTargetParameters
 
 It defines SQS as the target for the EventBridge Pipes.
 
