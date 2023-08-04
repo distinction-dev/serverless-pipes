@@ -1,5 +1,5 @@
 import { expect, assert } from "chai";
-import { ServerlessPipes, ServerlessPluginOptions } from "../src/index";
+import ServerlessPipes from "../src/index";
 import Serverless from "serverless";
 import {
   compileBasedOnSourceType,
@@ -9,6 +9,7 @@ import {
   getSourceArn,
   getTargetArn,
 } from "../src/compiler";
+import { ServerlessPluginOptions } from "../src/models";
 
 describe("ServerlessPipes", () => {
   let serverless: Serverless;

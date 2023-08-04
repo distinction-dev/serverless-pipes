@@ -13,7 +13,8 @@
     "semantic-release": "semantic-release",
     "type-check": "tsc --noEmit",
     "test-prepare":"cp -f 'src/index.ts' 'src/index-copy.ts' && sed -i 's/module.exports = ServerlessPipes;//g' 'src/index-copy.ts' && sed -i 's/import { ServerlessPipes, ServerlessPluginOptions } from \"..\\/src\\/index\";/import { ServerlessPipes, ServerlessPluginOptions } from \"..\\/src\\/index-copy\";/g' 'tests/pipes.test.ts'",
-    "test": "yarn test-prepare &&  TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts' && yarn test-cleanup",
+    "test-temp": "yarn test-prepare &&  TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts' && yarn test-cleanup",
+    "test":"TS_NODE_PROJECT='./tsconfig.base.json' mocha -r ts-node/register 'tests/**/*.ts'",
     "test-cleanup":"sed -i 's/import { ServerlessPipes, ServerlessPluginOptions } from \"..\\/src\\/index-copy\";/import { ServerlessPipes, ServerlessPluginOptions } from \"..\\/src\\/index\";/g' 'tests/pipes.test.ts' && rm -f 'src/index-copy.ts'"
   },
   "main": "./lib/index.js",

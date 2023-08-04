@@ -119,3 +119,7 @@ export function getSharedIAMRole(): Record<string, any> {
     },
   };
 }
+
+export interface ServerlessPluginOptions {
+  globalOptions?: boolean;
+}

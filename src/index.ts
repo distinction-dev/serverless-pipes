@@ -4,6 +4,7 @@ import { schema } from "./schema";
 import * as _ from "lodash";
 import {
   EnrichmentParameter,
+  ServerlessPluginOptions,
   getEnrichmentLambdaFunctionIAMRole,
   getSharedIAMRole,
 } from "./models";
@@ -25,10 +26,7 @@ import {
   AWSPipesPipeRequestedPipeStateDefinition,
 } from "serverless-schema";
 
-export interface ServerlessPluginOptions {
-  globalOptions?: boolean;
-}
-export class ServerlessPipes {
+class ServerlessPipes {
   serverless: Serverless;
   options: ServerlessPluginOptions;
   config: any;
@@ -360,4 +358,4 @@ export class ServerlessPipes {
 }
 
 // comment when doing unit testing
-module.exports = ServerlessPipes;
+export = ServerlessPipes;
