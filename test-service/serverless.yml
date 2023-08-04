@@ -24,7 +24,7 @@ provider:
       Resource: '*'
 
 custom:
-  region: ${opt:region, "ap-south-1"}
+  region: ${opt:region, "us-east-2"}
 
 plugins:
   localPath: "../lib/index.js"

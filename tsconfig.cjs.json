@@ -6,6 +6,8 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "outDir": "./lib",
     "declarationDir": "./lib/types"
   },
