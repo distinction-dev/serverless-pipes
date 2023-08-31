@@ -43,6 +43,9 @@ At the initial version of the plugin, the below mentioned AWS services are suppo
 ```yaml
 # serverless.yml
 
+plugins:
+  - serverless-pipes
+
 functions:
     pipeEnricher:
         handler: functions/pipeEnricher.handler
