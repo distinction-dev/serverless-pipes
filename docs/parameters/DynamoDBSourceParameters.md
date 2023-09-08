@@ -119,7 +119,7 @@ The number of batches to process concurrently from each shard. The default value
 [schema.ts:42](https://github.com/distinction-dev/serverless-pipes/blob/adc1ce1b20b719d2e58f62a01c813e4ef9c57a5c/src/schema.ts#L42)
 
 
-### startingPosition (optional)
+### startingPosition
 
 • **startingPosition**: `string`
 
