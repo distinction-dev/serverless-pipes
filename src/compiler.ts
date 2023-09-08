@@ -40,8 +40,7 @@ export function compileBasedOnSourceType(
     case "dynamodb": {
       const params: AWSPipesPipePipeSourceParametersDefinition = {
         DynamoDBStreamParameters: {
-          StartingPosition:
-            config.source[sourceName].parallelizationFactor || "",
+          StartingPosition: config.source[sourceName].startingPosition || "",
           BatchSize: config.source[sourceName]?.batchsize || 10,
           DeadLetterConfig: {
             Arn: config.source[sourceName]?.deadLetterArn || "",
@@ -63,8 +62,7 @@ export function compileBasedOnSourceType(
     case "kinesisStream": {
       const params: AWSPipesPipePipeSourceParametersDefinition = {
         KinesisStreamParameters: {
-          StartingPosition:
-            config.source[sourceName].parallelizationFactor || "",
+          StartingPosition: config.source[sourceName].startingPosition || "",
           BatchSize: config.source[sourceName]?.batchsize || 10,
           DeadLetterConfig: {
             Arn: config.source[sourceName]?.deadLetterArn || "",
