@@ -1,6 +1,7 @@
-import { expect, assert } from "chai";
-import ServerlessPipes from "../src/index";
+import { assert, expect } from "chai";
 import Serverless from "serverless";
+
+import ServerlessPipes from "../src";
 import {
   compileBasedOnSourceType,
   compileBasedOnTargetType,
@@ -253,6 +254,18 @@ describe("ServerlessPipes", () => {
     const type = "source";
     const pipe = "testPipe";
     expect(serverlessPipes.validateArn(arn, type, pipe)).to.be.undefined;
+  });
+
+  it("should vaidateArn without error if proper arn is given", () => {
+    const type = "source";
+    const pipe = "testPipe";
+    expect(
+      serverlessPipes.validateArn(
+        "arn:aws:sqs:eu-central-1:123456789012:queue-name",
+        type,
+        pipe
+      )
+    ).to.be.undefined;
   });
 
   it("should throw error if validateArn doesnt get invalid input parameters", () => {

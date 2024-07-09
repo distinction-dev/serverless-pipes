@@ -339,7 +339,7 @@ class ServerlessPipes {
     pipe: string
   ): void {
     const arnRegex = new RegExp(
-      "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-d{1})?:(d{12})?:(.+)$"
+      "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\\d{1})?:(\\d{12})?:(.+)$"
     );
     if (typeof arn === "object") arn = Object.keys(arn)[0];
     if (

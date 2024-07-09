@@ -1,4 +1,3 @@
-
 # Serverless Pipes Plugin
 
 Serverless Framework plugin called as "pipes", used to create EventBridge Pipes by providing the required event sources, targets and other parameters as needed.
@@ -16,8 +15,8 @@ yarn add serverless-pipes
 ```
 
 ## Allowed Services
-At the initial version of the plugin, the below mentioned AWS services are supported for the source, target and enrichment in the EventBridge Pipes. We will expand to other services in the future.
 
+At the initial version of the plugin, the below mentioned AWS services are supported for the source, target and enrichment in the EventBridge Pipes. We will expand to other services in the future.
 
 ### Source
 
@@ -36,8 +35,6 @@ At the initial version of the plugin, the below mentioned AWS services are suppo
 
 - [Lambda Function](docs/parameters/EnrichmentParameters.md)
 
-
-
 ## Usage
 
 ```yaml
@@ -47,11 +44,11 @@ plugins:
   - serverless-pipes
 
 functions:
-    pipeEnricher:
-        handler: functions/pipeEnricher.handler
+  pipeEnricher:
+    handler: functions/pipeEnricher.handler
 
 pipes:
- testPipe: #pipeName
+  testPipe: #pipeName
     enabled: true
     source:
       sqs:
@@ -61,13 +58,27 @@ pipes:
       sns:
         arn:
           Fn::GetAtt: [TargetSNSTopic, TopicArn]
-    enrichment: 
+    enrichment:
       name: pipeEnricher
     filter:
-      - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+      - Pattern: '{ "body": { "message": [ "hello" ], "city": [ "hey" ] }}'
     iamRolePipes:
       type: "individual"
 
+  anotherTestPipe: #pipeName
+    enabled: true
+    source:
+      sqs:
+        arn: arn:aws:sqs:eu-central-1:123456789012:source-queue-name
+    target:
+      sns:
+        arn: arn:aws:sqs:eu-central-1:123456789012:target-queue-name
+    enrichment:
+      name: pipeEnricher
+    filter:
+      - Pattern: '{ "body": { "message": [ "hello" ], "city": [ "hey" ] }}'
+    iamRolePipes:
+      type: "individual"
 ```
 
 For documentation refer [Docs](docs/index.md)
