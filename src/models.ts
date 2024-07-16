@@ -74,7 +74,7 @@ export function getTargetStepFunctionIAMRole(): Record<string, any> {
   return {
     Statement: {
       Effect: "Allow",
-      Action: ["states:StartExecution"],
+      Action: ["states:StartExecution", "states:StartSyncExecution"],
       Resource: "*",
     },
   };
@@ -114,6 +114,8 @@ export function getSharedIAMRole(): Record<string, any> {
         "kinesis:PutRecord",
         "sns:Subscribe",
         "sns:Publish",
+        "states:StartExecution",
+        "states:StartSyncExecution",
       ],
       Resource: "*",
     },
@@ -122,4 +124,5 @@ export function getSharedIAMRole(): Record<string, any> {
 
 export interface ServerlessPluginOptions {
   globalOptions?: boolean;
+  stage?: string;
 }

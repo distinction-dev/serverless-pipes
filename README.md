@@ -1,7 +1,18 @@
-
 # Serverless Pipes Plugin
 
 Serverless Framework plugin called as "pipes", used to create EventBridge Pipes by providing the required event sources, targets and other parameters as needed.
+
+## Pull-back changes from original author:
+
+Communication between the original author only takes place using the main branches.
+master branch is used to deploy changes to our GitHub Packages Storage, meaning after updates to main, always merge `main -> master` !
+
+- Pull back changes from origin: [distincion-dev/serverless-pipes:main -> belonio/serverless-pipes:main](https://github.com/belonio/serverless-pipes/compare/main...distinction-dev:serverless-pipes:main)
+- State pull request against origin: [belonio/serverless-pipes:main -> distincion-dev/serverless-pipes:main](https://github.com/belonio/serverless-pipes/compare/distinction-dev:serverless-pipes:main...main)
+
+DON'T FORGET: Real fixes are done against main and then merged to master, as master is solely considered as deployment gateway! Also, this ensures changes being able to go to the origin repository!
+
+![Merge Strategy](./docs/merge-strategy.png)
 
 ## Install
 
@@ -16,8 +27,8 @@ yarn add serverless-pipes
 ```
 
 ## Allowed Services
-At the initial version of the plugin, the below mentioned AWS services are supported for the source, target and enrichment in the EventBridge Pipes. We will expand to other services in the future.
 
+At the initial version of the plugin, the below mentioned AWS services are supported for the source, target and enrichment in the EventBridge Pipes. We will expand to other services in the future.
 
 ### Source
 
@@ -36,8 +47,6 @@ At the initial version of the plugin, the below mentioned AWS services are suppo
 
 - [Lambda Function](docs/parameters/EnrichmentParameters.md)
 
-
-
 ## Usage
 
 ```yaml
@@ -47,11 +56,11 @@ plugins:
   - serverless-pipes
 
 functions:
-    pipeEnricher:
-        handler: functions/pipeEnricher.handler
+  pipeEnricher:
+    handler: functions/pipeEnricher.handler
 
 pipes:
- testPipe: #pipeName
+  testPipe: #pipeName
     enabled: true
     source:
       sqs:
@@ -61,13 +70,27 @@ pipes:
       sns:
         arn:
           Fn::GetAtt: [TargetSNSTopic, TopicArn]
-    enrichment: 
+    enrichment:
       name: pipeEnricher
     filter:
-      - Pattern: "{ \"body\": { \"message\": [ \"hello\" ], \"city\": [ \"hey\" ] }}"
+      - Pattern: '{ "body": { "message": [ "hello" ], "city": [ "hey" ] }}'
     iamRolePipes:
       type: "individual"
 
+  anotherTestPipe: #pipeName
+    enabled: true
+    source:
+      sqs:
+        arn: arn:aws:sqs:eu-central-1:123456789012:source-queue-name
+    target:
+      sns:
+        arn: arn:aws:sqs:eu-central-1:123456789012:target-queue-name
+    enrichment:
+      name: pipeEnricher
+    filter:
+      - Pattern: '{ "body": { "message": [ "hello" ], "city": [ "hey" ] }}'
+    iamRolePipes:
+      type: "individual"
 ```
 
 For documentation refer [Docs](docs/index.md)

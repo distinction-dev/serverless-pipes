@@ -36,6 +36,7 @@ class ServerlessPipes {
   sharedIAMRoleARN: string;
   constructor(serverless: Serverless, options: ServerlessPluginOptions) {
     this.serverless = serverless;
+    this.options = options;
     this.sharedIAMRoleARN = "EventBridgePipesSharedIAMRole";
     this.sharedIAMRoleCount = 0;
     this.extendedServerless = serverless as Serverless & {
@@ -148,7 +149,9 @@ class ServerlessPipes {
           Properties: {
             RoleName:
               this.config[PipeName]?.iamRolePipes?.type === "individual"
-                ? `${PipeName}-pipes-iam-role`
+                ? `${PipeName}-pipes-iam-role-${
+                    this.options.stage || this.serverless.service.provider.stage
+                  }`
                 : this.config[PipeName]?.iamRolePipes?.type === "shared"
                 ? "shared-pipes-iam-role"
                 : "",
@@ -339,7 +342,7 @@ class ServerlessPipes {
     pipe: string
   ): void {
     const arnRegex = new RegExp(
-      "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-d{1})?:(d{12})?:(.+)$"
+      "^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9-]+):([a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-\\d{1})?:(\\d{12})?:(.+)$"
     );
     if (typeof arn === "object") arn = Object.keys(arn)[0];
     if (
